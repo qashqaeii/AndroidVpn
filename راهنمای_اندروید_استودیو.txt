@@ -224,8 +224,9 @@
       git commit -m "Initial commit"
       git branch -M main
       git remote add origin https://github.com/USERNAME/AndroidVpn.git
+      (به‌جای USERNAME نام کاربری GitHub خود را بگذارید. اگر قبلاً remote اضافه کرده‌اید و آدرس اشتباه بود: git remote set-url origin https://github.com/USERNAME/AndroidVpn.git)
       git push -u origin main
-      (به‌جای USERNAME نام کاربری GitHub خود را بگذارید.)
+      توجه: حتماً قبل از push در GitHub.com یک Repository خالی با همین نام (مثلاً AndroidVpn) بسازید؛ و اگر از دو مرحله‌ای (2FA) استفاده می‌کنید، برای push از Personal Access Token به‌جای پسورد استفاده کنید.
    ۴. بعد از push، به تب "Actions" در همان مخزن بروید. workflow با نام "Build APK" اجرا می‌شود.
    ۵. بعد از اتمام (چند دقیقه)، روی همان run کلیک کنید؛ در پایین صفحه بخش "Artifacts" را ببینید و "app-debug-apk" را دانلود کنید. فایل ZIP حاوی فایل .apk است؛ آن را روی گوشی نصب کنید.
    • اجرای دستی: در تب Actions روی "Build APK" کلیک کنید، دکمه "Run workflow" را بزنید و "Run workflow" را تأیید کنید.
