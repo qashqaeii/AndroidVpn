@@ -1,0 +1,252 @@
+================================================================================
+         راهنمای گام‌به‌گام کار با پروژه در Android Studio (برای مبتدی)
+================================================================================
+
+این فایل دقیقاً به شما می‌گوید از کجا شروع کنید و در هر مرحله چه کاری انجام دهید.
+
+
+─── مرحله ۱: نصب Android Studio ───
+
+۱. به سایت رسمی بروید:
+   https://developer.android.com/studio
+
+۲. دکمه "Download Android Studio" را بزنید.
+
+۳. فایل نصب (مثلاً android-studio-xxxx-windows.exe) را اجرا کنید.
+
+۴. در نصب، گزینه‌های پیش‌فرض را نگه دارید و "Next" بزنید تا نصب تمام شود.
+
+۵. اولین بار که Android Studio را باز می‌کنید، از شما می‌پرسد "Import previous settings?" 
+   اگر قبلاً استفاده نکرده‌اید، "Do not import settings" را انتخاب کنید و OK بزنید.
+
+۶. در صفحه Setup Wizard روی "Next" بزنید.
+   نوع نصب "Standard" را انتخاب کنید و دوباره "Next" بزنید.
+   رنگ و تم را هر چه دوست دارید انتخاب کنید و "Finish" بزنید.
+   صبر کنید تا دانلود SDK و ابزارها تمام شود (ممکن است چند دقیقه طول بکشد).
+
+
+─── مرحله ۲: باز کردن پروژه ───
+
+۱. Android Studio را باز کنید.
+
+۲. در صفحه اول (Welcome) گزینه "Open" را بزنید.
+   (اگر پروژه‌ای باز است: منوی File → Close Project تا به صفحه Welcome برگردید، بعد Open.)
+
+۳. پوشه پروژه را انتخاب کنید:
+   به این مسیر بروید:
+   e:\local\NEWWWWWWWWW\AndroidVpn
+
+۴. روی پوشه "AndroidVpn" یک بار کلیک کنید (نه دو بار) و بعد دکمه "OK" بزنید.
+
+۵. اگر پیام "Trust and Open Project?" آمد، "Trust Project" را بزنید.
+
+۶. صبر کنید تا Gradle همگام‌سازی شود (پایین صفحه نوار سبز "Gradle sync" می‌بینید).
+   اولین بار ممکن است چند دقیقه طول بکشد چون وابستگی‌ها دانلود می‌شوند.
+
+
+─── مرحله ۳: پیدا کردن فایل‌های پروژه ───
+
+۱. سمت چپ پنجره، نوار "Project" را ببینید.
+
+۲. بالای آن یک باکس است (مثلاً "Android" یا "Project").
+   روی آن کلیک کنید و "Project" را انتخاب کنید تا ساختار واقعی پوشه‌ها را ببینید.
+
+۳. مسیر کد اپلیکیشن اینجاست:
+   app → src → main → java → com → vpn → client
+   با کلیک روی هر پوشه می‌توانید فایل‌های کد را ببینید.
+
+
+─── مرحله ۴: ساخت اپلیکیشن (Build) ───
+
+۱. از منوی بالا روی "Build" کلیک کنید.
+
+۲. گزینه "Make Project" را بزنید (یا کلید میانبر Ctrl+F9).
+
+۳. پایین صفحه در قسمت "Build" نتیجه را ببینید.
+   اگر خطایی نبود و "BUILD SUCCESSFUL" آمد، یعنی پروژه درست ساخته شده است.
+
+
+─── مرحله ۵: اجرا روی گوشی یا شبیه‌ساز (امولاتور) ───
+
+روی گوشی واقعی (ساده‌تر برای VPN):
+
+۱. در گوشی Android خود:
+   Settings → About phone → چند بار روی "Build number" بزنید تا "Developer" فعال شود.
+   بعد بروید: Settings → Developer options → "USB debugging" را روشن کنید.
+
+۲. گوشی را با کابل USB به کامپیوتر وصل کنید و اگر گوشی پرسید "Allow USB debugging?" گزینه Allow را بزنید.
+
+۳. در Android Studio بالای پنجره، کنار دکمه سبز "Run" یک لیست بازشو هست که نام دستگاه‌ها را نشان می‌دهد.
+   گوشی شما باید آنجا ظاهر شود. آن را انتخاب کنید.
+
+۴. دکمه سبز "Run" (مثلث) را بزنید.
+
+۵. اپ روی گوشی نصب و اجرا می‌شود.
+
+
+با شبیه‌ساز (امولاتور):
+
+۱. از منوی "Tools" گزینه "Device Manager" را بزنید.
+
+۲. "Create Device" را بزنید، یک مدل گوشی انتخاب کنید (مثلاً Pixel 6) و "Next" بزنید.
+
+۳. یک نسخه سیستم (System Image) انتخاب کنید (اگر دانلود نشده بود، دکمه "Download" کنار آن را بزنید) و "Next" و بعد "Finish" بزنید.
+
+۴. در لیست دستگاه‌ها، امولاتوری که ساختید را انتخاب کنید و دکمه Run (مثلث سبز) را بزنید.
+
+۵. وقتی امولاتور بالا آمد، دوباره در Android Studio دستگاه را همان امولاتور انتخاب کنید و دکمه Run را بزنید تا اپ روی امولاتور نصب و اجرا شود.
+
+
+─── رفع مشکلات نصب SDK (مشکلات شما) ───
+
+■ مشکل ۰: "Missing SDK" / "A Target folder is neither empty nor..." و تیک‌ها غیرفعال هستند
+   • اگر پیام "No Android SDK found..." را می‌بینید، با "Next" به صفحهٔ SDK Components Setup می‌روید. آنجا اگر پوشهٔ SDK خراب یا نیمه‌پر باشد، خطای "A Target folder is neither empty nor does it point to an existing SDK installation" ظاهر می‌شود.
+   • در این حالت تیک‌ها (چک‌باکس‌ها) و دکمه Next غیرفعال می‌مانند — یعنی تا پوشهٔ SDK را درست نکنید، امکان انتخاب هیچ جزئی را ندارید. اول باید پوشه را خالی کنید یا مسیر جدید بدهید، بعد دوباره ویزارد را باز کنید؛ آن وقت تیک‌ها فعال می‌شوند.
+
+   راه‌حل (یکی از دو روش را انجام دهید):
+
+   روش الف — خالی کردن پوشه و نصب از نو (پیشنهادی):
+      ۱. در همان صفحهٔ SDK Setup روی Cancel بزنید و Android Studio را کاملاً ببندید.
+      ۲. در File Explorer به این مسیر بروید: C:\Users\qashq\AppData\Local\Android\Sdk
+      ۳. همهٔ محتویات داخل پوشه Sdk را حذف کنید (یا کل پوشه Sdk را حذف و دوباره یک پوشه خالی با نام Sdk بسازید).
+      ۴. Android Studio را دوباره باز کنید. وقتی به صفحهٔ SDK Components Setup رسیدید، این بار خطای قرمز نباید باشد و تیک‌ها فعال خواهند بود.
+      ۵. اجزای مورد نیاز (Android SDK و یک Android SDK Platform مثل API 34) را تیک بزنید و Next بزنید تا نصب انجام شود.
+
+   روش ب — استفاده از پوشهٔ جدید برای SDK:
+      ۱. Android Studio را ببندید.
+      ۲. یک پوشهٔ خالی بسازید، مثلاً: C:\Android\Sdk
+      ۳. Android Studio را باز کنید. بروید: File → Settings → Appearance & Behavior → System Settings → Android SDK
+      ۴. در "Android SDK location" به‌جای مسیر قبلی، مسیر جدید را وارد کنید: C:\Android\Sdk
+      ۵. Apply بزنید. اگر SDK Setup باز شد، اجزا را انتخاب و Next بزنید تا در محل جدید نصب شوند.
+
+
+■ مشکل ۰-۱: "The Android SDK location cannot be at the filesystem root" و "Nothing to show"
+   اگر در Settings → Android SDK این خطا را می‌بینید و در تب SDK Platforms نوشته "Nothing to show"، یعنی مسیر SDK اشتباه است: یا خالی گذاشته شده، یا به ریشهٔ درایو (مثلاً C:\) اشاره دارد. Android Studio اجازه نمی‌دهد مسیر SDK همان C:\ باشد.
+
+   راه‌حل (حتماً انجام دهید):
+      ۱. در همان صفحه Settings → Android SDK، در کادر "Android SDK location" این مسیر را دقیقاً وارد کنید (کپی/پیست کنید):
+         C:\Users\qashq\AppData\Local\Android\Sdk
+      ۲. مطمئن شوید فقط همین مسیر است؛ نه C:\ و نه C:\Android به‌تنهایی. باید مسیر کامل تا پوشهٔ Sdk باشد.
+      ۳. Apply و بعد OK بزنید.
+      ۴. اگر ویزارد SDK Components Setup باز است، آن را ببندید و دوباره از منو بروید: File → Settings → Android SDK و بررسی کنید مسیر درست نمایش داده می‌شود. بعد می‌توانید از همان صفحه یا از طریق Tools → SDK Manager پلتفرم‌ها و ابزارها را نصب کنید.
+      ۵. اگر هنوز "Nothing to show" بود، Android Studio را یک بار ببندید و دوباره باز کنید؛ بعد دوباره Settings → Android SDK را باز کنید و مسیر را چک کنید.
+
+
+■ مشکل ۱: "Android SDK - (unavailable)" و "Required Component Missing"
+   وقتی اجزای SDK به‌صورت unavailable نمایش داده می‌شوند، معمولاً Android Studio نمی‌تواند از سرورهای گوگل دانلود کند.
+
+   راه‌حل‌ها (به ترتیب امتحان کنید):
+
+   الف) تنظیم پروکسی (اگر از VPN یا پروکسی استفاده می‌کنید):
+      File → Settings → Appearance & Behavior → System Settings → HTTP Proxy
+      گزینه "Manual proxy configuration" را انتخاب کنید و آدرس و پورت پروکسی را وارد کنید.
+      سپس Apply و OK. بعد SDK Manager را دوباره باز کنید.
+
+   ب) استفاده از آینه (Mirror) برای دانلود SDK:
+      در ویندوز متغیر محیطی بسازید:
+      نام: ANDROID_SDK_ROOT یا در SDK Manager مسیر را چک کنید.
+      گاهی با قطع VPN و اتصال مستقیم یا برعکس، یکی کار می‌کند.
+
+   ج) نصب دستی SDK از طریق Command-line:
+      ۱. به مسیر SDK بروید: C:\Users\qashq\AppData\Local\Android\Sdk
+      ۲. اگر پوشه "cmdline-tools" وجود ندارد، از سایت developer.android.com
+         بخش "Command line tools only" را دانلود کنید و محتوا را داخل Sdk قرار دهید.
+      ۳. از PowerShell در مسیر Sdk\cmdline-tools\latest\bin اجرا کنید:
+         .\sdkmanager.bat "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+      بعد Android Studio را ریستارت کنید.
+
+   د) پاک‌سازی و نصب مجدد SDK (در صورت خرابی):
+      File → Settings → Android SDK → در تب "SDK Location" دکمه "Edit" کنار مسیر را بزنید.
+      می‌توانید مسیر جدیدی انتخاب کنید تا SDK در محل جدید نصب شود؛ یا پوشه قدیمی را
+      (پس از بستن Android Studio) حذف و دوباره Setup Wizard را اجرا کنید.
+
+
+■ مشکل ۲: "SDK emulator directory is missing"
+   یعنی پوشهٔ امولاتور داخل SDK وجود ندارد یا خالی است.
+
+   راه‌حل‌ها:
+
+   الف) ساخت دستی پوشه (گاهی کافی است):
+      ۱. Android Studio را ببندید.
+      ۲. به این مسیر بروید: C:\Users\qashq\AppData\Local\Android\Sdk
+      ۳. یک پوشه با نام دقیق "emulator" بسازید (همان حروف کوچک).
+      ۴. Android Studio را دوباره باز کنید و از منو: Tools → SDK Manager → تب "SDK Tools".
+      ۵. گزینه "Android Emulator" را تیک بزنید و "Apply" بزنید تا نصب شود.
+
+   ب) نصب Emulator از طریق sdkmanager (اگر دستور خط فرمان در دسترس است):
+      در مسیر Sdk\cmdline-tools\latest\bin اجرا کنید:
+      .\sdkmanager.bat "emulator"
+      بعد پوشه emulator به‌طور خودکار پر می‌شود.
+
+   ج) اگر هنوز "emulator directory is missing" آمد:
+      در SDK Manager در تب "SDK Tools" علاوه بر "Android Emulator"، گزینه
+      "Android SDK Build-Tools" و "Android SDK Platform-Tools" را هم تیک بزنید و Apply کنید.
+      سپس Android Studio را یک بار ببندید و دوباره باز کنید.
+
+
+■ مشکل ۳: "Total download size: 0 B" و هیچ چیزی نصب نمی‌شود
+   یعنی هیچ جزئی برای دانلود انتخاب یا شناسایی نشده است.
+
+   کارهایی که انجام دهید:
+   ۱. در همان صفحه SDK Components Setup، روی هر ردیف (مثلاً "Android SDK Platform")
+      کلیک کنید و تیک چک‌باکس را بزنید تا "Download size" بیشتر از ۰ شود.
+   ۲. حداقل این دو را حتماً انتخاب کنید: "Android SDK" و یک نسخه "Android SDK Platform"
+      (مثلاً Android 14 یا 15 به‌جای 16 اگر 16 unavailable است).
+   ۳. اگر فقط Android 16 unavailable است، نسخه پایین‌تر (مثلاً API 34 یا 35) را انتخاب کنید.
+   ۴. بعد "Next" بزنید و اجازه دهید دانلود انجام شود.
+
+
+─── اگر خطا گرفتید (عمومی) ───
+
+• "SDK not found" یا "SDK path":
+  File → Settings (یا Android Studio → Settings در مک) → Appearance & Behavior → System Settings → Android SDK
+  مطمئن شوید یک نسخه SDK نصب است (مثلاً Android 14) و مسیر SDK درج شده است.
+
+• "Gradle sync failed":
+  منوی File → Invalidate Caches → گزینه "Invalidate and Restart" را بزنید و دوباره پروژه را باز کنید.
+
+• خطای اینترنت یا فایروال:
+  Gradle باید بتواند از اینترنت فایل بگیرد. اگر فایروال یا آنتی‌ویروس دسترسی را بسته، موقتاً برای Android Studio اجازه دهید.
+
+
+─── راه‌های دیگر به‌جز نصب کامل Android Studio ───
+
+اگر به‌دلیل خطاهای SDK نمی‌خواهید یا نمی‌توانید Android Studio را کامل نصب کنید، دو راه عملی دارید:
+
+■ روش ۱: ساخت اپ (Build) در ابر با GitHub Actions (بدون نصب Studio و SDK روی ویندوز) ✓ آماده
+   فایل workflow در مسیر .github/workflows/build-apk.yml اضافه شده است. مراحل استفاده:
+
+   ۱. اگر Git نصب نیست، از https://git-scm.com دانلود و نصب کنید.
+   ۲. در GitHub.com یک Repository جدید بسازید (مثلاً نام: AndroidVpn)، بدون افزودن README.
+   ۳. در پوشه پروژه (e:\local\NEWWWWWWWWW\AndroidVpn) در PowerShell یا CMD اجرا کنید:
+      git init
+      git add .
+      git commit -m "Initial commit"
+      git branch -M main
+      git remote add origin https://github.com/USERNAME/AndroidVpn.git
+      git push -u origin main
+      (به‌جای USERNAME نام کاربری GitHub خود را بگذارید.)
+   ۴. بعد از push، به تب "Actions" در همان مخزن بروید. workflow با نام "Build APK" اجرا می‌شود.
+   ۵. بعد از اتمام (چند دقیقه)، روی همان run کلیک کنید؛ در پایین صفحه بخش "Artifacts" را ببینید و "app-debug-apk" را دانلود کنید. فایل ZIP حاوی فایل .apk است؛ آن را روی گوشی نصب کنید.
+   • اجرای دستی: در تب Actions روی "Build APK" کلیک کنید، دکمه "Run workflow" را بزنید و "Run workflow" را تأیید کنید.
+   • مزیت: نیازی به Android Studio یا SDK روی ویندوز نیست.
+
+■ روش ۲: ساخت از خط فرمان با SDK سبک (بدون خود Android Studio)
+   فقط Android SDK Command-line Tools و JDK نصب می‌شوند؛ ویرایش کد در Cursor یا VS Code؛ ساخت با Gradle از ترمینال (PowerShell یا CMD).
+   • نیاز: نصب JDK (مثلاً 17)، دانلود "Command line tools only" از developer.android.com، تنظیم متغیر محیطی ANDROID_HOME به مسیر SDK، و در پروژه داشتن Gradle Wrapper (gradlew) یا نصب Gradle.
+   • دستور ساخت: پس از تنظیم ANDROID_HOME و قرار دادن پکیج‌های لازم در SDK (مثلاً platform-tools، platforms;android-34، build-tools)، در پوشه پروژه اجرا کنید: gradlew.bat assembleDebug (در ویندوز) یا ./gradlew assembleDebug (در لینوکس/مک). خروجی APK در app/build/outputs/apk/debug/ قرار می‌گیرد.
+   • مزیت: حجم و دردسر کمتر از نصب کامل Android Studio؛ عیب: باید SDK و JDK را خودتان از خط فرمان مدیریت کنید و در این پروژه فعلاً Gradle Wrapper وجود ندارد و باید اضافه شود یا Gradle را جدا نصب کنید.
+
+
+─── خلاصه مراحل برای بار بعد ───
+
+۱. Android Studio را باز کنید.
+۲. Open → پوشه AndroidVpn را انتخاب کنید.
+۳. صبر کنید تا Gradle sync تمام شود.
+۴. Build → Make Project.
+۵. دستگاه (گوشی یا امولاتور) را انتخاب کنید و دکمه Run (مثلث سبز) را بزنید.
+
+
+================================================================================
+پایان راهنما
+================================================================================

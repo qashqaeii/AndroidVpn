@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Secure Connect</string>
+    <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="select_server">Please select a server first</string>
+    <string name="connected_to">Connected to %1$s</string>
+    <string name="disconnected">Ready to connect</string>
+    <string name="connecting">Connecting…</string>
+    <string name="error_connection">Connection error</string>
+    <string name="notification_channel_name">Connection</string>
+    <string name="notification_connected">Connected to %1$s</string>
+    <string name="ping_ms">%1$d ms</string>
+    <string name="status_online">Online</string>
+    <string name="status_slow">Slow</string>
+    <string name="status_offline">Offline</string>
+    <string name="kill_switch">Kill Switch</string>
+    <string name="kill_switch_summary">Block internet when VPN disconnects</string>
+    <string name="auto_reconnect">Auto Reconnect</string>
+    <string name="auto_reconnect_summary">Retry connection automatically if it drops</string>
+    <string name="settings">Settings</string>
+    <string name="empty_servers_title">No servers available</string>
+    <string name="empty_servers_message">Pull down to refresh or check your connection</string>
+    <string name="retry">Retry</string>
+    <string name="about">About</string>
+    <string name="about_summary">Secure Connect v1.0</string>
+</resources>

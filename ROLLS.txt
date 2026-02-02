@@ -1,0 +1,232 @@
+🧠 PROMPT FOR CURSOR — ANDROID VPN APP (V2RAY CONFIG BASED)
+
+You are a senior Android network engineer.
+Build a production-grade Android VPN client that connects to predefined VLESS/V2Ray configurations fetched from a remote server API.
+
+This is NOT a config editor app.
+Users cannot see or edit configs.
+They only select a location and press Connect.
+
+🎯 APP PURPOSE
+
+Create a VPN connector app that:
+
+Uses Android VpnService
+
+Uses V2Ray/Xray mobile core (libv2ray.aar)
+
+Fetches server configs from backend
+
+Shows latency (ping)
+
+Connects with one tap
+
+No login system
+
+No subscription logic
+
+🧱 TECH STACK
+
+Language: Kotlin
+
+Min SDK: 24+
+
+Architecture: MVVM
+
+Networking: Retrofit + OkHttp
+
+JSON: Moshi or Gson
+
+VPN Engine: libv2ray
+
+Coroutines + Flow
+
+ViewBinding or Compose UI
+
+🌍 BACKEND API
+Endpoint
+GET https://example.com/api/servers
+
+Response
+[
+  {
+    "id": 1,
+    "name": "Finland Fast",
+    "country": "FI",
+    "flag": "🇫🇮",
+    "config": "ENCRYPTED_STRING",
+    "status": "online"
+  }
+]
+
+🔐 CONFIG SECURITY
+
+Server returns AES encrypted VLESS config
+
+App must:
+
+Decrypt config
+
+Convert VLESS URL → V2Ray JSON
+
+Feed into V2Ray core
+
+Configs must NEVER be visible in UI or logs.
+
+📱 MAIN FEATURES
+1️⃣ Server List Screen
+
+Display:
+
+Country flag
+
+Server name
+
+Ping in ms
+
+Status (Online / Slow / Offline)
+
+Ping method:
+
+TCP socket test to host:port parsed from config
+
+2️⃣ Connect Button
+
+Flow:
+
+User selects server
+→ Download config
+→ Decrypt
+→ Build V2Ray JSON
+→ Start VpnService
+→ Start V2Ray core
+→ Update UI to Connected
+
+3️⃣ Connection States
+
+Implement observable states:
+
+DISCONNECTED
+
+CONNECTING
+
+CONNECTED
+
+ERROR
+
+4️⃣ Auto Reconnect
+
+If connection drops → retry automatically.
+
+5️⃣ Kill Switch (Optional toggle)
+
+If VPN disconnects unexpectedly → block internet.
+
+⚙ VPN SERVICE LAYER
+
+Create:
+
+MyVpnService : VpnService()
+
+
+Responsibilities:
+
+Establish TUN interface
+
+Route traffic to V2Ray core
+
+Handle lifecycle
+
+Foreground notification
+
+🧠 V2RAY CORE INTEGRATION
+
+Load libv2ray
+
+Start/Stop core
+
+Provide config JSON
+
+Capture logs (debug mode only)
+
+🔄 CONFIG PARSING
+
+App must support parsing:
+
+vless://UUID@host:port?type=tcp&security=none&...
+
+
+Convert into V2Ray outbound JSON format.
+
+🔒 SECURITY HARDENING
+
+Implement:
+
+Certificate Pinning
+
+Proguard/Obfuscation
+
+Root detection
+
+Block screenshots on main screen
+
+No clipboard usage
+
+🧩 ARCHITECTURE LAYERS
+UI Layer
+↓
+ViewModel
+↓
+Repository
+↓
+API Service
+↓
+Config Decryptor
+↓
+VpnManager
+↓
+V2RayCoreManager
+
+🎨 UI REQUIREMENTS
+
+Main Screen:
+
+App logo
+
+Server list
+
+Big Connect / Disconnect button
+
+Status text (Connected to Finland)
+
+Ping display
+
+Minimal, clean, modern.
+
+📢 PLAY STORE COMPLIANCE
+
+Use official VpnService permission
+
+Foreground notification while connected
+
+No mention of bypassing restrictions
+
+📦 OUTPUT EXPECTATION
+
+Generate:
+
+Full project structure
+
+All classes
+
+VpnService implementation
+
+V2Ray core bridge
+
+API layer
+
+Config parser
+
+Working connection flow
+
+Code must be production quality, modular, and documented.
