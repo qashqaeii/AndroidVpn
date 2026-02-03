@@ -68,9 +68,10 @@ class MyVpnService : VpnService() {
                 teardown()
                 stopForeground(STOP_FOREGROUND_REMOVE)
                 stopSelf()
-                ConnectionStateHolder.setState(ConnectionState.Error(
-                    getString(R.string.vpn_core_not_integrated)
-                ))
+                val detail = LibV2RayBridge.lastError
+                val msg = if (detail.isNullOrBlank()) getString(R.string.vpn_core_not_integrated)
+                else getString(R.string.vpn_core_not_integrated) + " [" + detail + "]"
+                ConnectionStateHolder.setState(ConnectionState.Error(msg))
             }
         } catch (e: Exception) {
             ConnectionStateHolder.setState(ConnectionState.Error(e.message ?: "VPN failed"))

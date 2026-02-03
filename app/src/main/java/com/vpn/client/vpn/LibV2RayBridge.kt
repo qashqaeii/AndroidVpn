@@ -15,6 +15,11 @@ object LibV2RayBridge {
 
     private const val TAG = "LibV2RayBridge"
 
+    /** آخرین دلیل خطا (برای نمایش در UI یا دیباگ). بعد از هر شکست resolve یا start به‌روز می‌شود. */
+    @Volatile
+    var lastError: String? = null
+        private set
+
     private var coreController: Any? = null
     private var runLoopThread: Thread? = null
     private var lastEnvPath: String = ""
@@ -55,7 +60,10 @@ object LibV2RayBridge {
         return try {
             val loader = LibV2RayBridge::class.java.classLoader ?: ClassLoader.getSystemClassLoader()
             Class.forName(name, true, loader)
-        } catch (_: Throwable) { null }
+        } catch (e: Throwable) {
+            Log.w(TAG, "loadClass($name): ${e.javaClass.simpleName}: ${e.message}")
+            null
+        }
     }
 
     private fun findMethod(clazz: Class<*>, name: String, vararg paramTypes: Class<*>): Method? {
@@ -76,12 +84,20 @@ object LibV2RayBridge {
         return null
     }
 
+    private fun setLastError(msg: String) {
+        lastError = msg
+        Log.w(TAG, msg)
+    }
+
     private fun resolveClasses() {
+        lastError = null
+
         // کتابخانهٔ native هسته (libgojni.so) باید قبل از لود کلاس‌های جاوا لود شود
         try {
             System.loadLibrary("gojni")
+            Log.i(TAG, "loadLibrary(gojni) OK")
         } catch (e: Throwable) {
-            if (Log.isLoggable(TAG, Log.DEBUG)) Log.d(TAG, "loadLibrary(gojni): ${e.message}")
+            setLastError("gojni: ${e.javaClass.simpleName}: ${e.message}")
         }
 
         // اول API نوع اول (go.libv2ray با CoreController) را امتحان کن
@@ -103,22 +119,36 @@ object LibV2RayBridge {
                 Log.i(TAG, "libv2ray resolved (CoreController API): $pkg")
                 return
             }
-        } catch (_: Throwable) { }
+        } catch (e: Throwable) {
+            Log.d(TAG, "go.libv2ray API skip: ${e.message}")
+        }
 
         // دوم API نوع دوم (libv2ray با V2RayPoint - Mronezc/2dust AAR)
         try {
             val pkg = "libv2ray"
             val libClass = loadClass("$pkg.Libv2ray")
             if (libClass == null) {
-                Log.w(TAG, "libv2ray.Libv2ray not loadable (AAR in app/libs?)")
-                throw ClassNotFoundException("$pkg.Libv2ray")
+                setLastError("Class not found: $pkg.Libv2ray (AAR in app/libs?)")
+                return
             }
-            val pointClass = loadClass("$pkg.V2RayPoint") ?: throw ClassNotFoundException("$pkg.V2RayPoint")
-            val handlerClass = loadClass("$pkg.V2RayVPNServiceSupportsSet") ?: throw ClassNotFoundException("$pkg.V2RayVPNServiceSupportsSet")
+            val pointClass = loadClass("$pkg.V2RayPoint")
+            if (pointClass == null) {
+                setLastError("Class not found: $pkg.V2RayPoint")
+                return
+            }
+            val handlerClass = loadClass("$pkg.V2RayVPNServiceSupportsSet")
+            if (handlerClass == null) {
+                setLastError("Class not found: $pkg.V2RayVPNServiceSupportsSet")
+                return
+            }
             v2RayPointHandlerInterface = handlerClass
             newV2RayPointMethod = findMethod(libClass, "newV2RayPoint", handlerClass)
                 ?: findMethod(libClass, "NewV2RayPoint", handlerClass)
                 ?: findMethodAnyCase(libClass, "newV2RayPoint", handlerClass)
+            if (newV2RayPointMethod == null) {
+                setLastError("Method not found: Libv2ray.newV2RayPoint(handler)")
+                return
+            }
             v2RayPointSetConfigMethod = findMethod(pointClass, "setConfigureFileContent", String::class.java)
                 ?: findMethod(pointClass, "setConfigurefilecontent", String::class.java)
                 ?: findMethodAnyCase(pointClass, "setConfigureFileContent", String::class.java)
@@ -127,21 +157,29 @@ object LibV2RayBridge {
                 ?: findMethod(pointClass, "runLoop", String::class.java)
                 ?: findMethod(pointClass, "RunLoop", String::class.java)
                 ?: findMethodAnyCase(pointClass, "runLoop")
+            if (v2RayPointRunLoopMethod == null) {
+                setLastError("Method not found: V2RayPoint.runLoop()")
+                return
+            }
             v2RayPointStopLoopMethod = findMethod(pointClass, "stopLoop")
                 ?: findMethod(pointClass, "StopLoop")
                 ?: findMethodAnyCase(pointClass, "stopLoop")
-            if (newV2RayPointMethod != null && v2RayPointRunLoopMethod != null && v2RayPointStopLoopMethod != null &&
-                (v2RayPointSetConfigMethod != null || (v2RayPointRunLoopMethod!!.parameterCount == 1 && v2RayPointRunLoopMethod!!.parameterTypes[0] == String::class.java))
-            ) {
-                useV2RayPointApi = true
-                Log.i(TAG, "libv2ray resolved (V2RayPoint API): $pkg")
+            if (v2RayPointStopLoopMethod == null) {
+                setLastError("Method not found: V2RayPoint.stopLoop()")
                 return
             }
+            if (v2RayPointSetConfigMethod == null && (v2RayPointRunLoopMethod!!.parameterCount != 1 || v2RayPointRunLoopMethod!!.parameterTypes[0] != String::class.java)) {
+                setLastError("Need setConfigureFileContent or runLoop(String)")
+                return
+            }
+            useV2RayPointApi = true
+            lastError = null
+            Log.i(TAG, "libv2ray resolved (V2RayPoint API): $pkg")
+            return
         } catch (e: Throwable) {
-            Log.w(TAG, "libv2ray V2RayPoint API not found: ${e.message}", e)
+            setLastError("libv2ray: ${e.javaClass.simpleName}: ${e.message}")
+            Log.w(TAG, "libv2ray V2RayPoint API error", e)
         }
-
-        Log.w(TAG, "libv2ray AAR not found or incompatible; put libv2ray.aar in app/libs")
     }
 
     /**
@@ -184,6 +222,7 @@ object LibV2RayBridge {
             startLoopMethod?.invoke(controller, configJson)
             true
         } catch (e: Throwable) {
+            setLastError("start CoreController: ${e.javaClass.simpleName}: ${e.message}")
             Log.e(TAG, "StartLoop failed", e)
             coreController = null
             false
@@ -216,6 +255,7 @@ object LibV2RayBridge {
             }.apply { name = "V2RayRunLoop"; start() }
             true
         } catch (e: Throwable) {
+            setLastError("start V2RayPoint: ${e.javaClass.simpleName}: ${e.message}")
             Log.e(TAG, "V2RayPoint start failed", e)
             coreController = null
             false
