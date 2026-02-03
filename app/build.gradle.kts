@@ -1,7 +1,37 @@
+import java.net.URL
+import java.io.FileOutputStream
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
+
+// دانلود خودکار libv2ray.aar از ریلیز ازپیش‌ساخته (در صورت نبودن در app/libs)
+val libsDir = file("libs")
+val aarDest = file("libs/libv2ray.aar")
+tasks.register("downloadLibv2rayAar") {
+    onlyIf { !aarDest.exists() }
+    doLast {
+        libsDir.mkdirs()
+        val urls = listOf(
+            "https://github.com/Mronezc/V2rayNG_Android.aar/releases/download/v1.8.1/libv2ray.aar",
+            "https://github.com/Mronezc/V2rayNG_Android.aar/releases/download/v1.8.4/libv2ray.aar",
+        )
+        for (urlStr in urls) {
+            try {
+                URL(urlStr).openStream().use { input ->
+                    FileOutputStream(aarDest).use { output -> input.copyTo(output) }
+                }
+                println("downloadLibv2rayAar: دانلود از $urlStr انجام شد.")
+                return@doLast
+            } catch (e: Exception) {
+                println("downloadLibv2rayAar: $urlStr -> ${e.message}")
+            }
+        }
+        println("downloadLibv2rayAar: دانلود انجام نشد. libv2ray.aar را دستی در app/libs قرار دهید. راهنما: VPN_INTEGRATION.md")
+    }
+}
+tasks.named("preBuild").configure { dependsOn("downloadLibv2rayAar") }
 
 android {
     namespace = "com.vpn.client"
@@ -38,6 +68,9 @@ android {
 }
 
 dependencies {
+    // libv2ray.aar از AndroidLibV2rayLite: در app/libs قرار دهید تا هستهٔ V2Ray فعال شود
+    implementation(fileTree("libs") { include("*.aar") })
+
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("androidx.appcompat:appcompat:1.6.1")

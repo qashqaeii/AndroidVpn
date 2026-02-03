@@ -22,3 +22,7 @@
 -keep class kotlin.** { *; }
 -keep class kotlin.Metadata { *; }
 -dontwarn kotlin.**
+
+# libv2ray (AndroidLibV2rayLite) – when AAR is in app/libs
+-keep class go.libv2ray.** { *; }
+-keep class libv2ray.** { *; }

@@ -58,8 +58,38 @@ object VlessParser {
             put("tag", "proxy")
         }
 
+        val socksInbound = JSONObject().apply {
+            put("tag", "socks-in")
+            put("listen", "127.0.0.1")
+            put("port", 10808)
+            put("protocol", "socks")
+            put("settings", JSONObject().apply {
+                put("auth", "noauth")
+                put("udp", true)
+            })
+            put("sniffing", JSONObject().apply {
+                put("enabled", true)
+                put("destOverride", org.json.JSONArray().put("http").put("tls"))
+            })
+        }
+        val directOutbound = JSONObject().apply {
+            put("protocol", "freedom")
+            put("tag", "direct")
+            put("settings", JSONObject())
+        }
         val config = JSONObject().apply {
-            put("outbounds", org.json.JSONArray().put(outbound))
+            put("inbounds", org.json.JSONArray().put(socksInbound))
+            put("outbounds", org.json.JSONArray()
+                .put(outbound)
+                .put(directOutbound))
+            put("routing", JSONObject().apply {
+                put("domainStrategy", "IPIfNonMatch")
+                put("rules", org.json.JSONArray().put(JSONObject().apply {
+                    put("type", "field")
+                    put("inboundTag", org.json.JSONArray().put("socks-in"))
+                    put("outboundTag", "proxy")
+                }))
+            })
         }
         return config.toString()
     }

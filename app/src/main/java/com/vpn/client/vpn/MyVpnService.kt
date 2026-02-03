@@ -19,10 +19,11 @@ class MyVpnService : VpnService() {
 
     private var tunFd: ParcelFileDescriptor? = null
     private var v2RayCore: V2RayCoreManager? = null
+    private val tun2socksRunner: Tun2SocksRunner = Tun2SocksStub()
 
     override fun onCreate() {
         super.onCreate()
-        v2RayCore = V2RayCoreManagerImpl()
+        v2RayCore = V2RayCoreManagerImpl(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -32,13 +33,7 @@ class MyVpnService : VpnService() {
                 val configJson = intent.getStringExtra(EXTRA_CONFIG_JSON) ?: return START_NOT_STICKY
                 val killSwitch = intent.getBooleanExtra(EXTRA_KILL_SWITCH, false)
                 startForeground(NOTIFICATION_ID, createNotification(serverName))
-                establishVpn(configJson, killSwitch)
-                ConnectionStateHolder.setState(ConnectionState.Connected(
-                    com.vpn.client.data.model.ServerItem(
-                        id = 0, name = serverName, country = "", flag = "",
-                        pingMs = -1, status = com.vpn.client.data.model.ServerStatus.ONLINE
-                    )
-                ))
+                establishVpn(serverName, configJson, killSwitch)
             }
             ACTION_DISCONNECT -> {
                 teardown()
@@ -50,7 +45,7 @@ class MyVpnService : VpnService() {
         return START_NOT_STICKY
     }
 
-    private fun establishVpn(configJson: String, killSwitch: Boolean) {
+    private fun establishVpn(serverName: String, configJson: String, killSwitch: Boolean) {
         ConnectionStateHolder.setState(ConnectionState.Connecting)
         try {
             tunFd = Builder()
@@ -60,18 +55,33 @@ class MyVpnService : VpnService() {
                 .addDnsServer("8.8.8.8")
                 .setMtu(1500)
                 .establish()
-            v2RayCore?.start(configJson)
+            val coreStarted = v2RayCore?.start(configJson) == true
+            if (coreStarted) {
+                tunFd?.fd?.let { fd -> tun2socksRunner.start(fd, SOCKS_PROXY_ADDRESS) }
+                ConnectionStateHolder.setState(ConnectionState.Connected(
+                    com.vpn.client.data.model.ServerItem(
+                        id = 0, name = serverName, country = "", flag = "",
+                        pingMs = -1, status = com.vpn.client.data.model.ServerStatus.ONLINE
+                    )
+                ))
+            } else {
+                teardown()
+                stopForeground(STOP_FOREGROUND_REMOVE)
+                stopSelf()
+                ConnectionStateHolder.setState(ConnectionState.Error(
+                    getString(R.string.vpn_core_not_integrated)
+                ))
+            }
         } catch (e: Exception) {
             ConnectionStateHolder.setState(ConnectionState.Error(e.message ?: "VPN failed"))
-            if (killSwitch) {
-                // Optional: keep blocking VPN to prevent traffic leak. For now just teardown.
-            }
+            if (killSwitch) { }
             teardown()
             stopSelf()
         }
     }
 
     private fun teardown() {
+        tun2socksRunner.stop()
         try {
             tunFd?.close()
         } catch (_: Exception) { }
@@ -118,5 +128,7 @@ class MyVpnService : VpnService() {
         const val EXTRA_KILL_SWITCH = "kill_switch"
         private const val CHANNEL_ID = "vpn_channel"
         private const val NOTIFICATION_ID = 1
+        /** با پورت inbound در VlessParser.parseToV2RayJson هماهنگ است */
+        private const val SOCKS_PROXY_ADDRESS = "127.0.0.1:10808"
     }
 }
