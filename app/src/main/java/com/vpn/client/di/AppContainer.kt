@@ -25,6 +25,6 @@ class AppContainer(private val context: Context) {
     val serverRepository: ServerRepository = ServerRepository(api, decryptor)
     val preferences: AppPreferences = AppPreferences(context)
 
-    private val v2RayCore = V2RayCoreManagerImpl()
+    private val v2RayCore = V2RayCoreManagerImpl(context)
     val vpnManager: VpnManager = VpnManager(context, v2RayCore)
 }
