@@ -6,24 +6,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:fitsSystemWindows="true"
+    android:fitsSystemWindows="false"
     tools:context=".ui.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/primary_variant"
+        android:background="@android:color/transparent"
         android:elevation="0dp"
+        app:liftOnScroll="true"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:minHeight="?attr/actionBarSize"
+            android:paddingStart="@dimen/spacing_lg"
+            android:paddingEnd="@dimen/spacing_lg"
             app:title="@string/app_name"
-            app:titleTextColor="@color/on_primary">
+            app:titleTextColor="@color/on_surface">
 
             <ImageButton
                 android:id="@+id/btnSettings"
@@ -32,21 +35,22 @@
                 android:layout_gravity="end"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/settings"
-                android:src="@android:drawable/ic_menu_preferences"
-                app:tint="@color/on_primary" />
-        </androidx.appcompat.widget.Toolbar>
+                android:src="@drawable/ic_settings_24"
+                app:tint="@color/on_surface" />
+        </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/statusCard"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_lg"
         android:layout_marginTop="@dimen/spacing_lg"
         android:layout_marginEnd="@dimen/spacing_lg"
-        android:background="@drawable/bg_status_card"
-        android:elevation="@dimen/card_elevation"
         android:padding="@dimen/spacing_lg"
+        app:cardBackgroundColor="@color/surface"
+        app:strokeColor="@color/card_stroke"
+        app:strokeWidth="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/appBar">
@@ -86,7 +90,8 @@
                     android:text="@string/disconnected"
                     android:textColor="@color/on_surface"
                     android:textSize="@dimen/text_title"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:text="Connected to Finland Fast" />
             </LinearLayout>
 
             <TextView
@@ -100,7 +105,7 @@
                 tools:text="45 ms"
                 tools:visibility="visible" />
         </LinearLayout>
-    </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <TextView
         android:id="@+id/labelServers"
@@ -109,7 +114,7 @@
         android:layout_marginStart="@dimen/spacing_lg"
         android:layout_marginTop="@dimen/spacing_lg"
         android:letterSpacing="0.02"
-        android:text="Servers"
+        android:text="@string/servers"
         android:textColor="@color/on_surface"
         android:textSize="@dimen/text_body"
         android:textStyle="bold"
@@ -138,7 +143,7 @@
                 android:clipToPadding="false"
                 android:paddingStart="@dimen/spacing_lg"
                 android:paddingEnd="@dimen/spacing_lg"
-                android:paddingBottom="@dimen/spacing_md"
+                android:paddingBottom="@dimen/spacing_xl"
                 android:scrollbars="vertical"
                 tools:listitem="@layout/item_server" />
 
@@ -206,15 +211,11 @@
         android:layout_marginStart="@dimen/spacing_lg"
         android:layout_marginEnd="@dimen/spacing_lg"
         android:layout_marginBottom="@dimen/spacing_xl"
-        android:elevation="@dimen/card_elevation"
-        android:stateListAnimator="@null"
         android:text="@string/connect"
         android:textAllCaps="false"
-        android:textSize="17sp"
         android:textStyle="bold"
-        app:cornerRadius="@dimen/card_radius"
         app:backgroundTint="@color/primary"
-        app:icon="@android:drawable/ic_lock_lock"
+        app:icon="@drawable/ic_shield_24"
         app:iconGravity="textStart"
         app:iconPadding="12dp"
         app:iconTint="@color/on_primary"

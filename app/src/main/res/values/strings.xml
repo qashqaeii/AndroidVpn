@@ -22,6 +22,7 @@
     <string name="empty_servers_title">No servers available</string>
     <string name="empty_servers_message">Pull down to refresh or check your connection</string>
     <string name="retry">Retry</string>
+    <string name="servers">Servers</string>
     <string name="about">About</string>
     <string name="about_summary">Secure Connect v1.0</string>
 </resources>

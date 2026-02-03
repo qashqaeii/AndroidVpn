@@ -1,36 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary: Teal/Cyan - متمایز و مدرن -->
-    <color name="primary">#009688</color>
-    <color name="primary_variant">#00796B</color>
-    <color name="primary_container">#B2DFDB</color>
+    <!--
+      Modern (Material 3-ish) palette – Light
+      هدف: سرفیس‌های خنثی + رنگ اصلی پرانرژی و مدرن
+    -->
+    <!-- Brand -->
+    <color name="primary">#3759F1</color>
+    <color name="primary_variant">#2D44C7</color>
+    <color name="primary_container">#E9EDFF</color>
     <color name="on_primary">#FFFFFF</color>
-    <color name="on_primary_container">#004D40</color>
+    <color name="on_primary_container">#0B1650</color>
 
-    <!-- Secondary / Accent -->
-    <color name="secondary">#03DAC6</color>
-    <color name="secondary_variant">#018786</color>
-    <color name="on_secondary">#000000</color>
+    <color name="secondary">#00B8D9</color>
+    <color name="secondary_variant">#0088A3</color>
+    <color name="secondary_container">#D6F7FF</color>
+    <color name="on_secondary">#FFFFFF</color>
+    <color name="on_secondary_container">#002B36</color>
 
-    <!-- Surface & Background -->
-    <color name="surface">#FAFAFA</color>
-    <color name="surface_variant">#F5F5F5</color>
-    <color name="background">#FFFFFF</color>
-    <color name="on_surface">#212121</color>
-    <color name="on_surface_variant">#757575</color>
+    <!-- Neutrals -->
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#F2F4F8</color>
+    <color name="background">#F7F8FB</color>
+    <color name="on_surface">#111318</color>
+    <color name="on_surface_variant">#5B5F6A</color>
+    <color name="outline">#D8DAE2</color>
 
     <!-- Status -->
-    <color name="connected">#2E7D32</color>
-    <color name="connected_light">#E8F5E9</color>
-    <color name="slow">#F9A825</color>
-    <color name="slow_light">#FFF8E1</color>
-    <color name="error">#C62828</color>
-    <color name="error_light">#FFEBEE</color>
-    <color name="offline">#9E9E9E</color>
+    <color name="connected">#1B8F4E</color>
+    <color name="connected_light">#E8F7EF</color>
+    <color name="slow">#D08900</color>
+    <color name="slow_light">#FFF4D6</color>
+    <color name="error">#D32F2F</color>
+    <color name="on_error">#FFFFFF</color>
+    <color name="error_light">#FDE7E7</color>
+    <color name="offline">#8A8F98</color>
 
     <!-- Card & Selection -->
     <color name="card_background">#FFFFFF</color>
-    <color name="card_selected">#E0F2F1</color>
-    <color name="card_stroke">#E0E0E0</color>
+    <color name="card_selected">#E9EEFF</color>
+    <color name="card_stroke">@color/outline</color>
     <color name="card_stroke_selected">@color/primary</color>
 </resources>

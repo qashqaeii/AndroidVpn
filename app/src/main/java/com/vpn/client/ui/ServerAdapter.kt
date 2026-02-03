@@ -2,9 +2,11 @@ package com.vpn.client.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.vpn.client.R
 import com.vpn.client.data.model.ServerItem
 import com.vpn.client.data.model.ServerStatus
@@ -41,7 +43,14 @@ class ServerAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: ServerItem, currentSelectedId: Int?) {
-            binding.root.isSelected = item.id == currentSelectedId
+            val selected = item.id == currentSelectedId
+            binding.root.isSelected = selected
+            (binding.root as? MaterialCardView)?.apply {
+                val res = context.resources
+                strokeWidth = res.getDimensionPixelSize(if (selected) R.dimen.card_stroke_selected_width else R.dimen.card_stroke_width)
+                setStrokeColor(ContextCompat.getColor(context, if (selected) R.color.card_stroke_selected else R.color.card_stroke))
+                setCardBackgroundColor(ContextCompat.getColor(context, if (selected) R.color.card_selected else R.color.card_background))
+            }
             binding.flag.text = item.flag
             binding.name.text = item.name
             binding.status.text = when (item.status) {
