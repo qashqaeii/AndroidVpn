@@ -59,7 +59,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun tryAutoReconnect() {
         autoReconnectJob?.cancel()
-        val server = _uiState.value.selectedServer ?: return
+        if (_uiState.value.selectedServer == null) return
         autoReconnectJob = viewModelScope.launch {
             delay(AUTO_RECONNECT_DELAY_MS)
             connect()

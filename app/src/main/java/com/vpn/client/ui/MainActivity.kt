@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.HapticFeedbackConstants
-import android.view.WindowManager
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.WindowCompat
 import androidx.activity.viewModels
@@ -50,7 +49,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        blockScreenshots()
         requestNotificationPermissionIfNeeded()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -103,7 +101,17 @@ class MainActivity : AppCompatActivity() {
                     binding.loading.isVisible = state.loading && state.servers.isEmpty()
                     binding.swipeRefresh.isRefreshing = state.refreshing || (state.loading && state.servers.isNotEmpty())
                     binding.emptyState.isVisible = !state.loading && state.servers.isEmpty()
-                    state.error?.let { if (state.servers.isEmpty()) binding.statusText.text = it }
+                    if (state.servers.isEmpty()) {
+                        state.error?.let {
+                            binding.statusText.text = it
+                            binding.emptyStateError.text = it
+                            binding.emptyStateError.isVisible = true
+                        } ?: run {
+                            binding.emptyStateError.isVisible = false
+                        }
+                    } else {
+                        binding.emptyStateError.isVisible = false
+                    }
                     updateConnectionUi(state.connectionState)
                     state.selectedServer?.let { updatePingDisplay(it) }
                 }
@@ -133,15 +141,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun blockScreenshots() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            setShowWhenLocked(false)
-            setTurnScreenOn(false)
-        }
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_SECURE,
-            WindowManager.LayoutParams.FLAG_SECURE
-        )
+    override fun onStart() {
+        super.onStart()
+        viewModel.loadServers()
     }
 
     private fun checkVpnPermissionAndConnect() {

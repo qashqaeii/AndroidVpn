@@ -191,6 +191,19 @@
                     android:textColor="@color/on_surface_variant"
                     android:textSize="@dimen/text_caption" />
 
+                <TextView
+                    android:id="@+id/emptyStateError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:gravity="center"
+                    android:maxLines="3"
+                    android:visibility="gone"
+                    android:textColor="@color/error"
+                    android:textSize="@dimen/text_caption"
+                    tools:text="Connection failed"
+                    tools:visibility="visible" />
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnRetry"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
