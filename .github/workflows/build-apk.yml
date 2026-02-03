@@ -1,12 +1,12 @@
-# ساخت خودکار APK بدون نصب Android Studio روی ویندوز
-# بعد از push به GitHub، این workflow اجرا می‌شود و APK در Artifacts قابل دانلود است.
+# ساخت خودکار APK روی GitHub Actions
+# بعد از push به main/master اجرا می‌شود؛ APK از تب Actions → آخرین run → Artifacts قابل دانلود است.
 
 name: Build APK
 
 on:
   push:
     branches: [ main, master ]
-  workflow_dispatch:   # امکان اجرای دستی از تب Actions
+  workflow_dispatch:
 
 jobs:
   build:
@@ -28,15 +28,22 @@ jobs:
           packages: 'tools platform-tools platforms;android-34 build-tools;34.0.0'
 
       - name: Set ANDROID_HOME
-        run: echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+        run: |
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-version: '8.2'
+      - name: Generate Gradle Wrapper
+        run: |
+          gradle wrapper --gradle-version 8.2 --no-daemon || true
+          chmod +x gradlew
 
       - name: Build Debug APK
-        run: gradle assembleDebug --no-daemon
+        run: |
+          if [ -f ./gradlew ]; then
+            ./gradlew assembleDebug --no-daemon
+          else
+            gradle assembleDebug --no-daemon
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
