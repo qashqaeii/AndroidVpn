@@ -25,5 +25,5 @@
     <string name="servers">Servers</string>
     <string name="about">About</string>
     <string name="about_summary">Secure Connect v1.0</string>
-    <string name="vpn_core_not_integrated">موتور VPN (libv2ray + tun2socks) در این نسخهٔ اپ ادغام نشده است. برای اتصال واقعی باید هستهٔ V2Ray را اضافه کنید. راهنما: VPN_INTEGRATION.md</string>
+    <string name="vpn_core_not_integrated">هستهٔ V2Ray راه نیفتاد. مطمئن شوید libv2ray.aar در app/libs است، یک بار Clean و Rebuild بگیرید و دوباره نصب کنید. برای جزئیات: logcat با تگ LibV2RayBridge. راهنما: VPN_INTEGRATION.md</string>
 </resources>

@@ -5,9 +5,9 @@
 
 ## وضعیت فعلی کد
 
-- **LibV2RayBridge**: با reflection به libv2ray متصل می‌شود. اگر AAR در `app/libs/` باشد، `InitCoreEnv`، `CoreController` و `StartLoop`/`StopLoop` فراخوانی می‌شوند.
-- **V2RayCoreManagerImpl**: با دریافت `Context`، در `start()` اول `LibV2RayBridge.initCoreEnv(envPath, "")` و سپس `LibV2RayBridge.start(configJson)` را صدا می‌زند؛ در صورت نبود AAR همان حالت قبلی (خطای «موتور VPN ادغام نشده») نمایش داده می‌شود.
-- **Tun2SocksRunner** و **Tun2SocksStub**: رابط و stub برای tun2socks تعریف شده؛ بعد از بالا آمدن هسته، `MyVpnService` با `tun2socksRunner.start(tunFd, "127.0.0.1:10808")` TUN را به SOCKS وصل می‌کند. با stub فعلی فقط هسته بالا می‌آید؛ برای هدایت واقعی ترافیک TUN باید یک پیاده‌سازی واقعی tun2socks اضافه شود.
+- **LibV2RayBridge**: با reflection به libv2ray متصل می‌شود. دو API پشتیبانی می‌شود: (۱) `go.libv2ray` با CoreController و (۲) **`libv2ray`** با V2RayPoint (AARهای Mronezc/2dust). اگر AAR در `app/libs/` باشد، هسته راه می‌افتد. برای اینکه سوکت‌های هسته از TUN خارج شوند، **Protect(fd)** در handler با `VpnService.protect(fd)` پیاده شده و از طریق `V2RayCoreManagerImpl` به پل داده می‌شود.
+- **V2RayCoreManagerImpl**: در `start()` مقداردهی env، تنظیم **protectCallback** (برای VpnService.protect)، و سپس `LibV2RayBridge.start(configJson, protectCallback)` را صدا می‌زند. در صورت نبود یا عدم تطابق AAR، خطای «هستهٔ V2Ray راه نیفتاد» نمایش داده می‌شود؛ یک بار دیگر resolve در `start()` امتحان می‌شود.
+- **Tun2SocksRunner** و **Tun2SocksStub**: رابط و stub برای tun2socks تعریف شده؛ بعد از بالا آمدن هسته، `MyVpnService` با `tun2socksRunner.start(tunFd, "127.0.0.1:10808")` TUN را به SOCKS وصل می‌کند. با stub فعلی وضعیت «Connected» نمایش داده می‌شود ولی ترافیک سیستم از TUN هدایت نمی‌شود؛ برای هدایت واقعی ترافیک باید یک پیاده‌سازی واقعی tun2socks اضافه شود (بخش ۲ زیر).
 - کانفیگ کامل V2Ray (inbound SOCKS روی ۱۰۸۰۸ + outbound VLESS) در `VlessParser.parseToV2RayJson()` ساخته می‌شود.
 
 ## ۱) هستهٔ V2Ray (libv2ray)

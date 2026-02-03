@@ -19,6 +19,9 @@ object LibV2RayBridge {
     private var runLoopThread: Thread? = null
     private var lastEnvPath: String = ""
 
+    /** برای اینکه سوکت‌های هسته از TUN خارج شوند، باید VpnService.protect(fd) صدا زده شود. از start(configJson, protectCallback) استفاده کنید. */
+    var protectCallback: ((Int) -> Boolean)? = null
+
     // API نوع اول: CoreController
     private var initCoreEnvMethod: Method? = null
     private var newCoreControllerMethod: Method? = null
@@ -150,10 +153,15 @@ object LibV2RayBridge {
 
     /**
      * هسته را با کانفیگ JSON راه می‌اندازد.
+     * @param protectCallback برای هر fd سوکت هسته صدا زده می‌شود؛ باید VpnService.protect(fd) برگرداند تا اتصال درست کار کند.
      * @return true اگر راه‌اندازی با موفقیت شروع شد
      */
-    fun start(configJson: String): Boolean {
+    fun start(configJson: String, protectCallback: ((Int) -> Boolean)? = this.protectCallback): Boolean {
+        if (!isAvailable) {
+            resolveClasses()
+        }
         if (!isAvailable) return false
+        this.protectCallback = protectCallback
         return if (useV2RayPointApi) {
             startV2RayPoint(configJson)
         } else {
@@ -245,7 +253,15 @@ object LibV2RayBridge {
         val handler = object : InvocationHandler {
             override fun invoke(proxy: Any?, method: Method?, args: Array<out Any?>?): Any {
                 when (method?.name?.lowercase()) {
-                    "setup", "prepare", "shutdown", "protect", "onemitstatus" -> return 0
+                    "setup", "prepare", "shutdown", "onemitstatus" -> return 0
+                    "protect" -> {
+                        val fd = when (val a = args?.getOrNull(0)) {
+                            is Number -> a.toInt()
+                            else -> 0
+                        }
+                        val ok = protectCallback?.invoke(fd) == true
+                        return if (ok) 1 else 0
+                    }
                 }
                 return 0
             }

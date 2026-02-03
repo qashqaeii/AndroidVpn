@@ -1,6 +1,8 @@
 package com.vpn.client.vpn
 
 import android.content.Context
+import android.net.VpnService
+import android.os.Build
 
 /**
  * پیاده‌سازی مدیر هستهٔ V2Ray.
@@ -17,7 +19,18 @@ class V2RayCoreManagerImpl(private val context: Context) : V2RayCoreManager {
         }
         val envPath = context.filesDir?.absolutePath ?: ""
         LibV2RayBridge.initCoreEnv(envPath, "")
-        val started = LibV2RayBridge.start(configJson)
+        val protectCallback: (Int) -> Boolean = { fd ->
+            (context as? VpnService)?.let { vpn ->
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    vpn.protect(fd)
+                } else {
+                    try {
+                        VpnService::class.java.getMethod("protect", Int::class.javaPrimitiveType).invoke(vpn, fd) == true
+                    } catch (_: Throwable) { true }
+                }
+            } ?: false
+        }
+        val started = LibV2RayBridge.start(configJson, protectCallback)
         running = started
         return started
     }
