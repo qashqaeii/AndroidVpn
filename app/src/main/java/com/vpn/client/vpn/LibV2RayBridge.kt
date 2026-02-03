@@ -37,8 +37,9 @@ object LibV2RayBridge {
 
     val isAvailable: Boolean
         get() = when {
-            useV2RayPointApi -> newV2RayPointMethod != null && v2RayPointSetConfigMethod != null &&
-                    v2RayPointRunLoopMethod != null && v2RayPointStopLoopMethod != null && v2RayPointHandlerInterface != null
+            useV2RayPointApi -> newV2RayPointMethod != null && v2RayPointRunLoopMethod != null &&
+                    v2RayPointStopLoopMethod != null && v2RayPointHandlerInterface != null &&
+                    (v2RayPointSetConfigMethod != null || (v2RayPointRunLoopMethod!!.parameterCount == 1))
             else -> initCoreEnvMethod != null && newCoreControllerMethod != null &&
                     startLoopMethod != null && stopLoopMethod != null && handlerInterface != null
         }
@@ -47,17 +48,38 @@ object LibV2RayBridge {
         resolveClasses()
     }
 
+    private fun loadClass(name: String): Class<*>? {
+        return try {
+            val loader = LibV2RayBridge::class.java.classLoader ?: ClassLoader.getSystemClassLoader()
+            Class.forName(name, true, loader)
+        } catch (_: Throwable) { null }
+    }
+
     private fun findMethod(clazz: Class<*>, name: String, vararg paramTypes: Class<*>): Method? {
         return try { clazz.getMethod(name, *paramTypes) } catch (_: Exception) { null }
+    }
+
+    private fun findMethodAnyCase(clazz: Class<*>, name: String, vararg paramTypes: Class<*>): Method? {
+        val lower = name.lowercase()
+        for (m in clazz.methods) {
+            if (m.name.lowercase() == lower && m.parameterTypes.size == paramTypes.size) {
+                var match = true
+                for (i in paramTypes.indices) {
+                    if (m.parameterTypes[i] != paramTypes[i]) { match = false; break }
+                }
+                if (match) return m
+            }
+        }
+        return null
     }
 
     private fun resolveClasses() {
         // اول API نوع اول (go.libv2ray با CoreController) را امتحان کن
         try {
             val pkg = "go.libv2ray"
-            val libClass = Class.forName("$pkg.Libv2ray")
-            val controllerClass = Class.forName("$pkg.CoreController")
-            val handler = Class.forName("$pkg.CoreCallbackHandler")
+            val libClass = loadClass("$pkg.Libv2ray") ?: throw ClassNotFoundException("$pkg.Libv2ray")
+            val controllerClass = loadClass("$pkg.CoreController") ?: throw ClassNotFoundException("$pkg.CoreController")
+            val handler = loadClass("$pkg.CoreCallbackHandler") ?: throw ClassNotFoundException("$pkg.CoreCallbackHandler")
             handlerInterface = handler
             initCoreEnvMethod = findMethod(libClass, "initCoreEnv", String::class.java, String::class.java)
                 ?: findMethod(libClass, "InitCoreEnv", String::class.java, String::class.java)
@@ -76,29 +98,37 @@ object LibV2RayBridge {
         // دوم API نوع دوم (libv2ray با V2RayPoint - Mronezc/2dust AAR)
         try {
             val pkg = "libv2ray"
-            val libClass = Class.forName("$pkg.Libv2ray")
-            val pointClass = Class.forName("$pkg.V2RayPoint")
-            val handlerClass = Class.forName("$pkg.V2RayVPNServiceSupportsSet")
+            val libClass = loadClass("$pkg.Libv2ray")
+            if (libClass == null) {
+                Log.w(TAG, "libv2ray.Libv2ray not loadable (AAR in app/libs?)")
+                throw ClassNotFoundException("$pkg.Libv2ray")
+            }
+            val pointClass = loadClass("$pkg.V2RayPoint") ?: throw ClassNotFoundException("$pkg.V2RayPoint")
+            val handlerClass = loadClass("$pkg.V2RayVPNServiceSupportsSet") ?: throw ClassNotFoundException("$pkg.V2RayVPNServiceSupportsSet")
             v2RayPointHandlerInterface = handlerClass
             newV2RayPointMethod = findMethod(libClass, "newV2RayPoint", handlerClass)
                 ?: findMethod(libClass, "NewV2RayPoint", handlerClass)
+                ?: findMethodAnyCase(libClass, "newV2RayPoint", handlerClass)
             v2RayPointSetConfigMethod = findMethod(pointClass, "setConfigureFileContent", String::class.java)
                 ?: findMethod(pointClass, "setConfigurefilecontent", String::class.java)
+                ?: findMethodAnyCase(pointClass, "setConfigureFileContent", String::class.java)
             v2RayPointRunLoopMethod = findMethod(pointClass, "runLoop")
                 ?: findMethod(pointClass, "RunLoop")
+                ?: findMethod(pointClass, "runLoop", String::class.java)
+                ?: findMethod(pointClass, "RunLoop", String::class.java)
+                ?: findMethodAnyCase(pointClass, "runLoop")
             v2RayPointStopLoopMethod = findMethod(pointClass, "stopLoop")
                 ?: findMethod(pointClass, "StopLoop")
-            if (newV2RayPointMethod != null && v2RayPointSetConfigMethod != null &&
-                v2RayPointRunLoopMethod != null && v2RayPointStopLoopMethod != null
+                ?: findMethodAnyCase(pointClass, "stopLoop")
+            if (newV2RayPointMethod != null && v2RayPointRunLoopMethod != null && v2RayPointStopLoopMethod != null &&
+                (v2RayPointSetConfigMethod != null || (v2RayPointRunLoopMethod!!.parameterCount == 1 && v2RayPointRunLoopMethod!!.parameterTypes[0] == String::class.java))
             ) {
                 useV2RayPointApi = true
                 Log.i(TAG, "libv2ray resolved (V2RayPoint API): $pkg")
                 return
             }
         } catch (e: Throwable) {
-            if (Log.isLoggable(TAG, Log.DEBUG)) {
-                Log.d(TAG, "libv2ray V2RayPoint API not found: ${e.message}")
-            }
+            Log.w(TAG, "libv2ray V2RayPoint API not found: ${e.message}", e)
         }
 
         Log.w(TAG, "libv2ray AAR not found or incompatible; put libv2ray.aar in app/libs")
@@ -153,11 +183,18 @@ object LibV2RayBridge {
             val pointClass = point.javaClass
             findMethod(pointClass, "setPackageCodePath", String::class.java)?.invoke(point, lastEnvPath)
             findMethod(pointClass, "setPackageName", String::class.java)?.invoke(point, "com.vpn.client")
-            v2RayPointSetConfigMethod?.invoke(point, configJson)
+            val runLoopTakesConfig = v2RayPointRunLoopMethod!!.parameterCount == 1
+            if (!runLoopTakesConfig) {
+                v2RayPointSetConfigMethod?.invoke(point, configJson)
+            }
+            val configArg = if (runLoopTakesConfig) configJson else null
             // runLoop() در Go بلوک می‌کند؛ در یک رشتهٔ جدا اجرا می‌شود
             runLoopThread = Thread {
                 try {
-                    v2RayPointRunLoopMethod?.invoke(point)
+                    if (configArg != null)
+                        v2RayPointRunLoopMethod?.invoke(point, configArg)
+                    else
+                        v2RayPointRunLoopMethod?.invoke(point)
                 } catch (e: Throwable) {
                     Log.e(TAG, "RunLoop error", e)
                 }
@@ -207,8 +244,8 @@ object LibV2RayBridge {
         val h = v2RayPointHandlerInterface!!
         val handler = object : InvocationHandler {
             override fun invoke(proxy: Any?, method: Method?, args: Array<out Any?>?): Any {
-                when (method?.name) {
-                    "setup", "prepare", "shutdown", "protect", "onEmitStatus" -> return 0
+                when (method?.name?.lowercase()) {
+                    "setup", "prepare", "shutdown", "protect", "onemitstatus" -> return 0
                 }
                 return 0
             }
