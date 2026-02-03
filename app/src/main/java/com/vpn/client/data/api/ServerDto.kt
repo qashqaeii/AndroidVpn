@@ -7,7 +7,7 @@ import com.squareup.moshi.JsonClass
  * Server item from backend API.
  * Config is encrypted; never exposed in UI or logs.
  */
-@JsonClass(generateAdapter = true)
+@JsonClass(generateAdapter = false)
 data class ServerDto(
     @Json(name = "id") val id: Int,
     @Json(name = "name") val name: String,
