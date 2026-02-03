@@ -4,10 +4,10 @@ import retrofit2.http.GET
 
 /**
  * Backend API for fetching server list.
- * GET https://example.com/api/servers
+ * GET {BASE_URL}api/servers/
  */
 interface ServersApi {
 
-    @GET("api/servers")
+    @GET("api/servers/")
     suspend fun getServers(): List<ServerDto>
 }

@@ -40,15 +40,26 @@ class ServerRepository(
     }
 
     private suspend fun mapToItem(dto: ServerDto): ServerItem {
-        val pingMs = PingHelper.pingEncryptedConfig(dto.config, decryptor)
-        val status = PingHelper.statusFromPingMs(pingMs)
-        return ServerItem(
-            id = dto.id,
-            name = dto.name,
-            country = dto.country,
-            flag = dto.flag,
-            pingMs = if (pingMs >= 0) pingMs else -1,
-            status = status
-        )
+        return try {
+            val pingMs = PingHelper.pingEncryptedConfig(dto.config, decryptor)
+            val status = PingHelper.statusFromPingMs(pingMs)
+            ServerItem(
+                id = dto.id,
+                name = dto.name,
+                country = dto.country,
+                flag = dto.flag,
+                pingMs = if (pingMs >= 0) pingMs else -1,
+                status = status
+            )
+        } catch (_: Exception) {
+            ServerItem(
+                id = dto.id,
+                name = dto.name,
+                country = dto.country,
+                flag = dto.flag,
+                pingMs = -1,
+                status = ServerStatus.OFFLINE
+            )
+        }
     }
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- API روی HTTP با IP است؛ برای اتصال اپ به سرور cleartext مجاز است. با انتقال به HTTPS/دامنه می‌توانید base-config را به false برگردانید. -->
 <network-security-config>
-    <base-config cleartextTrafficPermitted="false">
+    <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />
             <certificates src="user" />

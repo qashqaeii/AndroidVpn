@@ -9,7 +9,8 @@ import java.util.concurrent.TimeUnit
 
 object ApiModule {
 
-    private const val BASE_URL = "https://example.com/"
+    /** آدرس سرور API — باید با ALLOWED_HOSTS و CORS در بک‌اند یکی باشد (اسلش انتهایی الزامی). */
+    private const val BASE_URL = "http://77.110.116.139:8000/"
 
     fun createServersApi(okHttp: OkHttpClient): ServersApi {
         return Retrofit.Builder()

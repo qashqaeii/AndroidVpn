@@ -19,7 +19,7 @@ class AppContainer(private val context: Context) {
     val api: ServersApi = ApiModule.createServersApi(okHttp)
 
     /** 32-byte AES key; must match backend CONFIG_ENCRYPTION_KEY (same 32 chars). */
-    private val decryptKey = "vpnclient-aes256-key-32bytes!!!!!!".toByteArray(Charsets.UTF_8).copyOf(32)
+    private val decryptKey = "vpnclient-aes256-key-32bytes!!!!".toByteArray(Charsets.UTF_8).copyOf(32)
     val decryptor: ConfigDecryptor = ConfigDecryptor(decryptKey)
 
     val serverRepository: ServerRepository = ServerRepository(api, decryptor)
