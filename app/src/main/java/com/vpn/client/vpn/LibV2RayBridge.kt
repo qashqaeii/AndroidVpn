@@ -77,6 +77,13 @@ object LibV2RayBridge {
     }
 
     private fun resolveClasses() {
+        // کتابخانهٔ native هسته (libgojni.so) باید قبل از لود کلاس‌های جاوا لود شود
+        try {
+            System.loadLibrary("gojni")
+        } catch (e: Throwable) {
+            if (Log.isLoggable(TAG, Log.DEBUG)) Log.d(TAG, "loadLibrary(gojni): ${e.message}")
+        }
+
         // اول API نوع اول (go.libv2ray با CoreController) را امتحان کن
         try {
             val pkg = "go.libv2ray"
